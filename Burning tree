@@ -1,0 +1,72 @@
+class Solution {
+    
+    unordered_map<Node*,Node*>parent;
+    unordered_map<Node*,bool>visited;
+    
+  public:
+  
+  Node* findenode(Node* root,int target){
+      queue<Node*>q;
+      q.push(root);
+      while(!q.empty()){
+          Node* t = q.front();
+          q.pop();
+          if(t->data == target)
+          return t;
+          if(t->left != NULL)
+          q.push(t->left);
+          if(t->right != NULL)
+          q.push(t->right);
+      }
+  }
+  
+  void connectwithparent(Node* root,Node* parentnode){
+      if(root == NULL)return;
+      
+      parent[root] = parentnode;
+      connectwithparent(root->left,root);
+      connectwithparent(root->right,root);
+      
+  }
+  
+  void burntree(Node* root,int &ans){
+      queue<Node*>q;
+      q.push(root);
+      visited[root] = true;
+      while(!q.empty()){
+          bool f = false;
+          int n = q.size();
+          for(int i = 0;i<n;i++){
+              Node * front = q.front();
+              q.pop();
+              if(front->left && !visited[front->left]){
+                  f = true;
+                  q.push(front->left);
+                  visited[front->left]++;
+              }
+              if(front->right && !visited[front->right]){
+                  f = true;
+                  q.push(front->right);
+                  visited[front->right] = true;
+              }
+              if(parent[front] && !visited[parent[front]]){
+                  f = true;
+                  q.push(parent[front]);
+                  visited[parent[front]] = true;
+              }
+          }
+          if(f == true)
+          ans++;
+      }
+  }
+  
+    int minTime(Node* root, int target) 
+    {
+        int ans = 0;
+        connectwithparent(root,NULL);
+        Node* tar = findenode(root,target);
+        //bfs
+        burntree(tar,ans);
+        return ans;
+    }
+};
